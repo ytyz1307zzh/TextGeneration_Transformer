@@ -23,7 +23,12 @@ def position_encoding_init(n_position, d_pos_vec):
     return torch.from_numpy(position_enc).type(torch.FloatTensor) # seq_len x d_model
 
 def word_embedding_init(emb_path):
-    embed_mat=np.loadtxt(emb_path,encoding='utf-8',dtype=np.str)
+    emb_file=open(emb_path,'r',encoding='utf-8')
+    emb_mat=[]
+    for line in emb_file:
+        emb_mat.append(line.strip().split())
+
+    embed_mat=np.array(emb_mat)
     embed_mat=embed_mat[:,1:].astype(np.float)
 
     const_embed=np.random.rand(4,300)*2-1 # bos,eos,pad,unk
