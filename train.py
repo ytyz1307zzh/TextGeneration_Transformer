@@ -173,7 +173,7 @@ def main():
     parser.add_argument('-data', required=True)
     parser.add_argument('-emb_path', default=None)
 
-    parser.add_argument('-epoch', type=int, default=30)
+    parser.add_argument('-epoch', type=int, default=5)
     parser.add_argument('-batch_size', type=int, default=32)
 
     #parser.add_argument('-d_word_vec', type=int, default=300)
