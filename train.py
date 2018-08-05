@@ -172,6 +172,8 @@ def main():
 
     parser.add_argument('-data', required=True)
     parser.add_argument('-emb_path', default=None)
+    parser.add_argument('-trained_model', default=None)
+    parser.add_argument('-current_step', default=0)
 
     parser.add_argument('-epoch', type=int, default=5)
     parser.add_argument('-batch_size', type=int, default=32)
@@ -249,13 +251,18 @@ def main():
         n_head=opt.n_head,
         dropout=opt.dropout)
 
-    #print(transformer)
+    if opt.trained_model:
+        checkpoint = torch.load(opt.trained_model)
+        transformer.load_state_dict(checkpoint['model'])
+        print('[Info] Trained model state loaded.')
+
+    print(transformer)
 
     optimizer = ScheduledOptim(
         optim.Adam(
             transformer.get_trainable_parameters(),
             betas=(0.9, 0.98), eps=1e-09),
-        opt.d_model, opt.n_warmup_steps)
+        opt.d_model, opt.n_warmup_steps, opt.current_steps)
 
 
     def get_criterion(vocab_size):
