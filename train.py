@@ -256,13 +256,13 @@ def main():
         transformer.load_state_dict(checkpoint['model'])
         print('[Info] Trained model state loaded.')
 
-    print(transformer)
+    #print(transformer)
 
     optimizer = ScheduledOptim(
         optim.Adam(
             transformer.get_trainable_parameters(),
             betas=(0.9, 0.98), eps=1e-09),
-        opt.d_model, opt.n_warmup_steps, opt.current_steps)
+        opt.d_model, opt.n_warmup_steps, opt.current_step)
 
 
     def get_criterion(vocab_size):
