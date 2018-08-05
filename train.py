@@ -173,7 +173,7 @@ def main():
     parser.add_argument('-data', required=True)
     parser.add_argument('-emb_path', default=None)
     parser.add_argument('-trained_model', default=None)
-    parser.add_argument('-current_step', default=0)
+    parser.add_argument('-current_step', type=int, default=0)
 
     parser.add_argument('-epoch', type=int, default=5)
     parser.add_argument('-batch_size', type=int, default=32)
