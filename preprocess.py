@@ -37,7 +37,7 @@ def read_instances_from_file(inst_file, max_sent_len=90, keep_case=False):
 def build_vocab_idx(word_insts, min_word_count):
     ''' Trim vocab by number of occurence '''
 
-    vocab_path=r'E:\NLP\glove_vocab.txt'
+    vocab_path=r'../glove_vocab.txt'
     vocab_file=open(vocab_path,'r',encoding='utf-8')
 
     full_vocab = vocab_file.readline().strip().split() #构建无重复元素的vocabulary
@@ -139,24 +139,10 @@ def main():
     print('[Info] Convert source word instances into sequences of word index.')
     train_src_insts = convert_instance_to_idx_seq(train_src_word_insts, src_word2idx)
     valid_src_insts = convert_instance_to_idx_seq(valid_src_word_insts, src_word2idx)
-
-    train_src_output=open(r'E:\NLP\text-generation-from-keywords\train_source_idx.txt','w',encoding='utf-8')
-    valid_src_output=open(r'E:\NLP\text-generation-from-keywords\valid_source_idx.txt','w',encoding='utf-8')
-    for line in train_src_insts:
-        print(' '.join(map(str,line)),file=train_src_output)
-    for line in valid_src_insts:
-        print(' '.join(map(str,line)),file=valid_src_output)
-
+    
     print('[Info] Convert target word instances into sequences of word index.')
     train_tgt_insts = convert_instance_to_idx_seq(train_tgt_word_insts, tgt_word2idx)
     valid_tgt_insts = convert_instance_to_idx_seq(valid_tgt_word_insts, tgt_word2idx)
-
-    train_tgt_output=open(r'E:\NLP\text-generation-from-keywords\train_target_idx.txt','w',encoding='utf-8')
-    valid_tgt_output=open(r'E:\NLP\text-generation-from-keywords\valid_target_idx.txt','w',encoding='utf-8')
-    for line in train_tgt_insts:
-        print(' '.join(map(str,line)),file=train_tgt_output)
-    for line in valid_tgt_insts:
-        print(' '.join(map(str,line)),file=valid_tgt_output)
     
     data = {
         'settings': opt,

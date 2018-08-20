@@ -148,7 +148,7 @@ def train(model, training_data, validation_data, crit, optimizer, opt):
 
         if opt.save_model:
             if opt.save_mode == 'all':  #保存所有模型
-                model_name = opt.save_model + '_accu_{accu:3.3f}.chkpt'.format(accu=100*valid_accu)
+                model_name = opt.save_model + '_ppl_{ppl:8.5f}.chkpt'.format(ppl=math.exp(min(train_loss,100)))
                 torch.save(checkpoint, model_name)  #保存settings和model
             elif opt.save_mode == 'best':  #保存最佳模型
                 model_name = opt.save_model + '.chkpt'
