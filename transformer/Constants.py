@@ -3,6 +3,9 @@ PAD = 0
 UNK = 1
 BOS = 2
 EOS = 3
+PERIOD = 6
+QUESTION_MARK = 192
+EXCLAMATION_MARK = 809
 
 PAD_WORD = '<blank>'
 UNK_WORD = '<unk>'
