@@ -81,8 +81,21 @@ class Diverse_Beam(object):
         flat_beam_lk = beam_lk.view(-1) #铺平成1维，方便排序 beam*n_vocab,
 
         # 排序选出前beam_size个分数, best_scores_id.size=(beam,)
-        best_scores, best_scores_id = flat_beam_lk.topk(self.beam_size,0,True,True) # 1st sort
-        best_scores, best_scores_id = flat_beam_lk.topk(self.beam_size,0,True,True) # 2nd sort
+        best_scores, best_scores_id = flat_beam_lk.topk(self.beam_size+1,0,True,True) # 1st sort
+        best_scores, best_scores_id = flat_beam_lk.topk(self.beam_size+1,0,True,True) # 2nd sort
+
+        best_scores=best_scores.tolist()
+        best_scores_id=best_scores_id.tolist()
+        try:
+            quote_id=best_scores_id.index(Constants.QUOTATION_MARK) # 如果出现了引号
+            best_scores=[best_scores[id] for id in range(len(best_scores)) if id!=quote_id]
+            best_scores_id=[best_scores_id[id] for id in range(len(best_scores_id)) if id!=quote_id]
+        except ValueError:
+            pass
+        best_scores=best_scores[:-1]
+        best_scores_id=best_scores_id[:-1]
+        best_scores=torch.Tensor(best_scores)
+        best_scores_id=torch.LongTensor(best_scores_id)
 
         self.scores = best_scores
 

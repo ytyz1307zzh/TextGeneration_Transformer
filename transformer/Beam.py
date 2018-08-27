@@ -10,25 +10,26 @@ import numpy as np
 import transformer.Constants as Constants
 
 class Beam(object):
+    # 对单个句子进行的beam_search
     ''' Store the neccesary info for beam search. '''
     # 维护每一步选的beam个句子中的最后一个词及其对应的上一步beam个句子中的哪个句子
 
-    def __init__(self, size, cuda=False):
+    def __init__(self,beam_size,cuda=False):
 
-        self.size = size
+        self.beam_size = beam_size
         self.done = False # 检查是否结束
 
         self.tt = torch.cuda if cuda else torch
 
         # The score for each translation on the beam.
-        self.scores = self.tt.FloatTensor(size).zero_()
+        self.scores = self.tt.FloatTensor(beam_size).zero_()
         self.all_scores = []
 
         # The backpointers at each time-step.
         self.prev_ks = []
 
         # The outputs at each time-step.
-        self.next_ys = [self.tt.LongTensor(size).fill_(Constants.PAD)]
+        self.next_ys = [self.tt.LongTensor(beam_size).fill_(Constants.PAD)]
         self.next_ys[0][0] = Constants.BOS
 
     def get_current_state(self):
@@ -50,18 +51,18 @@ class Beam(object):
         else:
             beam_lk = word_lk[0]
 
-        flat_beam_lk = beam_lk.view(-1) #铺平成1维，方便排序
+        flat_beam_lk = beam_lk.view(-1) #铺平成1维，方便排序 beam*n_vocab,
         
-        # 排序选出前beam_size个分数
-        best_scores, best_scores_id = flat_beam_lk.topk(self.size, 0, True, True) # 1st sort
-        best_scores, best_scores_id = flat_beam_lk.topk(self.size, 0, True, True) # 2nd sort
+        # 排序选出前beam_size个分数, best_scores_id.size=(beam,)
+        best_scores, best_scores_id = flat_beam_lk.topk(self.beam_size,0,True,True) # 1st sort
+        best_scores, best_scores_id = flat_beam_lk.topk(self.beam_size,0,True,True) # 2nd sort
 
         self.all_scores.append(self.scores)
         self.scores = best_scores
 
         # bestScoresId is flattened beam x word array, so calculate which
         # word and beam each score came from
-        prev_k = best_scores_id / num_words  # 前一个部分的标号（是之前beam个句子中的哪一个）
+        prev_k = best_scores_id / num_words  # 前一个部分的标号（是之前beam个句子中的哪一个）,size=(beam,)
         self.prev_ks.append(prev_k)  #size=[seq_len, beam]
         self.next_ys.append(best_scores_id - prev_k * num_words) # 当前选出单词的标号（是当前n_vocab个单词中的哪一个）, size=[seq_len, beam]
 
@@ -92,7 +93,7 @@ class Beam(object):
             hyps = [[Constants.BOS] + h for h in hyps]
             dec_seq = torch.from_numpy(np.array(hyps))
 
-        return dec_seq
+        return dec_seq # (beam,seq_len)
 
     def get_hypothesis(self, k):
         """

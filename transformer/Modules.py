@@ -10,7 +10,7 @@ class Linear(nn.Module):
     def __init__(self, d_in, d_out, bias=True):
         super(Linear, self).__init__()
         self.linear = nn.Linear(d_in, d_out, bias=bias)
-        init.xavier_normal(self.linear.weight) #用xavier正态分布初始化填充线性全连接层的weight
+        init.xavier_normal_(self.linear.weight) #用xavier正态分布初始化填充线性全连接层的weight
 
     def forward(self, x):
         return self.linear(x)

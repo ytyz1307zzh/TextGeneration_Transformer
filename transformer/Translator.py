@@ -59,6 +59,9 @@ class Translator(object):
         batch_size = src_seq.size(0)
         beam_size = self.opt.beam_size
 
+        src_seq=src_seq[:, 1:-1]
+        src_pos=src_pos[:, 1:-1]
+
         #- Encode
         enc_output, *_ = self.model.encoder(src_seq, src_pos)
 
@@ -90,7 +93,7 @@ class Translator(object):
             # size: (batch * beam) x seq
             dec_partial_seq = dec_partial_seq.view(-1, len_dec_seq)
             # wrap into a Variable (untrainable)
-            dec_partial_seq = Variable(dec_partial_seq, volatile=True)
+            dec_partial_seq = Variable(dec_partial_seq, requires_grad=False)
 
             # -- Preparing decoded pos seq -- #
             # size: 1 x seq
@@ -99,7 +102,7 @@ class Translator(object):
             dec_partial_pos = dec_partial_pos.repeat(n_remaining_sents * beam_size, 1) 
             # 建造出[remaining_sents*beam, len_dec_seq]的tensor，只需要考虑剩余未翻译完的句子
             # wrap into a Variable
-            dec_partial_pos = Variable(dec_partial_pos.type(torch.LongTensor), volatile=True)
+            dec_partial_pos = Variable(dec_partial_pos.type(torch.LongTensor), requires_grad=False)
 
             if self.opt.cuda:
                 dec_partial_seq = dec_partial_seq.cuda()
@@ -149,7 +152,7 @@ class Translator(object):
                 active_seq_data = original_seq_data.index_select(0, active_inst_idxs) # [n_active, beam*seq_len]
                 active_seq_data = active_seq_data.view(*new_size) # [n_active*beam, seq_len]
 
-                return Variable(active_seq_data, volatile=True)
+                return Variable(active_seq_data, requires_grad=False)
 
             def update_active_enc_info(enc_info_var, active_inst_idxs):
                 ''' Remove the encoder outputs of finished instances in one batch. '''
@@ -164,7 +167,7 @@ class Translator(object):
                 active_enc_info_data = original_enc_info_data.index_select(0, active_inst_idxs)
                 active_enc_info_data = active_enc_info_data.view(*new_size)
 
-                return Variable(active_enc_info_data, volatile=True)
+                return Variable(active_enc_info_data, requires_grad=False)
 
             src_seq = update_active_seq(src_seq, active_inst_idxs)
             enc_output = update_active_enc_info(enc_output, active_inst_idxs)
@@ -183,4 +186,4 @@ class Translator(object):
             hyps = [beams[beam_idx].get_hypothesis(i) for i in tail_idxs[:n_best]]
             all_hyp += [hyps]
 
-        return all_hyp, all_scores # all_hyp.size()=[batch*beam, seq_len]
+        return all_hyp, all_scores # all_hyp.size()=[batch*beam, n_best, seq_len]

@@ -86,17 +86,19 @@ class Translator_idbs(object):
         for i in range(self.model_opt.max_token_seq_len):
 
             len_dec_seq = i + 1
+            print('current time step: ',len_dec_seq)
 
             # -- Preparing decoded data seq -- #
             # size: batch x beam x seq
-            bos = self.tt.LongTensor(batch_size,beam_size).fill_(Constants.BOS).unsqueeze(-1)
+            bos = self.tt.LongTensor(n_remaining_sents,beam_size).fill_(Constants.BOS).unsqueeze(-1)
             dec_partial_seq = torch.stack([
                 b.get_current_state() for b in beams if not b.done])
-            dec_partial_seq = torch.cat([bos,dec_partial_seq],dim=-1)
+            if len_dec_seq>1:
+                dec_partial_seq = torch.cat([bos,dec_partial_seq],dim=-1)
             # size: (batch * beam) x seq
             dec_partial_seq = dec_partial_seq.view(-1, len_dec_seq)
             # wrap into a Variable (untrainable)
-            dec_partial_seq = Variable(dec_partial_seq, volatile=True)
+            dec_partial_seq = Variable(dec_partial_seq, requires_grad=False)
 
             # -- Preparing decoded pos seq -- #
             # size: 1 x seq
@@ -105,7 +107,7 @@ class Translator_idbs(object):
             dec_partial_pos = dec_partial_pos.repeat(n_remaining_sents * beam_size, 1)
             # 建造出[remaining_sents*beam, len_dec_seq]的tensor，只需要考虑剩余未翻译完的句子
             # wrap into a Variable
-            dec_partial_pos = Variable(dec_partial_pos.type(torch.LongTensor), volatile=True)
+            dec_partial_pos = Variable(dec_partial_pos.type(torch.LongTensor), requires_grad=False)
 
             if self.opt.cuda:
                 dec_partial_seq = dec_partial_seq.cuda()
@@ -155,7 +157,7 @@ class Translator_idbs(object):
                 active_seq_data = original_seq_data.index_select(0, active_inst_idxs) # [n_active, beam*seq_len]
                 active_seq_data = active_seq_data.view(*new_size) # [n_active*beam, seq_len]
 
-                return Variable(active_seq_data, volatile=True)
+                return Variable(active_seq_data, requires_grad=False)
 
             def update_active_enc_info(enc_info_var, active_inst_idxs):
                 ''' Remove the encoder outputs of finished instances in one batch. '''
@@ -170,7 +172,7 @@ class Translator_idbs(object):
                 active_enc_info_data = original_enc_info_data.index_select(0, active_inst_idxs)
                 active_enc_info_data = active_enc_info_data.view(*new_size)
 
-                return Variable(active_enc_info_data, volatile=True)
+                return Variable(active_enc_info_data, requires_grad=False)
 
             src_seq = update_active_seq(src_seq, active_inst_idxs)
             enc_output = update_active_enc_info(enc_output, active_inst_idxs)
