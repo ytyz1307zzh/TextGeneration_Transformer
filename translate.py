@@ -17,7 +17,7 @@ def main():
     parser.add_argument('-src', required=True,
                         help='Source sequence to decode (one line per sequence)')
     parser.add_argument('-vocab', required=True,
-                        help='Source sequence to decode (one line per sequence)')
+                        help='preprocess file to provide vocabulary')
     parser.add_argument('-output', default='pred.txt',
                         help="""Path to output the predictions (each line will
                         be the decoded sequence""")
