@@ -25,6 +25,12 @@ def main():
                         help='Beam size')
     parser.add_argument('-batch_size', type=int, default=30,
                         help='Batch size')
+    parser.add_argument('-lambda_1',type=float, default=2/3,
+                        help='diversity factor for hamming diversity')
+    parser.add_argument('-lambda_2',type=float, default=2/3,
+                        help='diversity factor for bi-gram diversity')
+    parser.add_argument('-lambda_3',type=float, default=2/3,
+                        help='diversity factor for tri-gram diversity')
     parser.add_argument('-no_cuda', action='store_true')
 
     opt = parser.parse_args()
