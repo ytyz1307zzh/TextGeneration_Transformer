@@ -91,9 +91,8 @@ class Diverse_Beam(object):
             best_scores=[best_scores[id] for id in range(len(best_scores)) if id!=quote_id]
             best_scores_id=[best_scores_id[id] for id in range(len(best_scores_id)) if id!=quote_id]
         except ValueError:
-            pass
-        best_scores=best_scores[:-1]
-        best_scores_id=best_scores_id[:-1]
+            best_scores=best_scores[:-1]
+            best_scores_id=best_scores_id[:-1]
         best_scores=torch.Tensor(best_scores)
         best_scores_id=torch.LongTensor(best_scores_id)
 
