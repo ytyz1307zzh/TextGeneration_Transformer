@@ -8,17 +8,20 @@
 import torch
 import numpy as np
 import transformer.Constants as Constants
+from transformer.Diversity import hamming_diversity, n_gram_diversity
 
 class Diverse_Beam(object):
     # 对单个句子进行的beam_search
     ''' Store the neccesary info for beam search. '''
     # 维护每一步选的beam个句子中的最后一个词及其对应的上一步beam个句子中的哪个句子
 
-    def __init__(self,beam_size,cuda=False):
+    def __init__(self,beam_size,lambda_1=2/3,lambda_2=2/3,lambda_3=2/3,cuda=False):
 
         self.beam_size = beam_size
         self.done = False # 检查是否结束
-        self.Lambda=2 # diversity系数
+        self.Lambda_1=lambda_1 # diversity factor for hamming diversity
+        self.Lambda_2=lambda_2 # diversity factor for bi-gram diversity
+        self.Lambda_3=lambda_3 # diversity factor for tri-gram diversity
 
         self.sent_cnt=0 # 已完成的句子个数
         self.prev_sents=[] # 已完成的句子, (sent, seq_len)
@@ -49,15 +52,6 @@ class Diverse_Beam(object):
         #之前的句子不同，这一步得到的单词概率也不同，所以之前存下的beam个句子是分开的
         beam_size=self.beam_size
 
-        def hamming_diversity(prev_sent, cur_sent):
-            """Return the Hamming distance between equal-length sequences"""
-            div=0
-            for i in range(min(len(prev_sent),len(cur_sent))):
-                if prev_sent[i]!=cur_sent[i]:
-                    div+=1
-            div+=abs(len(prev_sent)-len(cur_sent)) # 多出来的也算作diversity
-            return div
-
         diversity=torch.zeros(beam_size,num_words) #(beam, n_vocab)
         if self.sent_cnt>0: # 对第二个及之后的句子，加入hamming diversity
             if len(self.next_ys)>1:
@@ -69,14 +63,16 @@ class Diverse_Beam(object):
             for beam_id in range(beam_size):
                 for sent_id in range(num_words):
                     for prev_sent in self.prev_sents: # 和之前的每个句子比较，diversity求和
-                        diversity[beam_id][sent_id]+=hamming_diversity(prev_sent,cur_sents[beam_id][sent_id])
+                        diversity[beam_id][sent_id]+=self.Lambda_1*hamming_diversity(prev_sent,cur_sents[beam_id][sent_id])
+                        diversity[beam_id][sent_id]+=self.Lambda_2*n_gram_diversity(prev_sent,cur_sents[beam_id][sent_id],n=2)
+                        diversity[beam_id][sent_id]+=self.Lambda_3*n_gram_diversity(prev_sent,cur_sents[beam_id][sent_id],n=3)
         #print('diversity:',diversity)
 
         # Sum the previous scores.
         if len(self.prev_ks) > 0:
-            beam_lk = word_lk + self.scores.unsqueeze(1).expand_as(word_lk)+self.Lambda*diversity  # 所有的组合：size=[beam, n_vocab]
+            beam_lk = word_lk + self.scores.unsqueeze(1).expand_as(word_lk)+diversity  # 所有的组合：size=[beam, n_vocab]
         else:
-            beam_lk = word_lk[0]+self.Lambda*diversity[0] # t=0, 直接找beam_size个概率最大的单词
+            beam_lk = word_lk[0]+diversity[0] # t=0, 直接找beam_size个概率最大的单词
 
         flat_beam_lk = beam_lk.view(-1) #铺平成1维，方便排序 beam*n_vocab,
 

@@ -75,8 +75,12 @@ class Translator_idbs(object):
             enc_output.data.repeat(1, beam_size, 1).view(
                 enc_output.size(0) * beam_size, enc_output.size(1), enc_output.size(2)))
 
+        lambda_1=self.opt.lambda_1
+        lambda_2=self.opt.lambda_2
+        lambda_3=self.opt.lambda_3
+
         #--- Prepare beams
-        beams = [Diverse_Beam(beam_size, self.opt.cuda) for _ in range(batch_size)] #每个inst建一个beam类
+        beams = [Diverse_Beam(beam_size,lambda_1,lambda_2,lambda_3,self.opt.cuda) for _ in range(batch_size)] #每个inst建一个beam类
         #最终的输出数据都保存在beams里边，src_seq和enc_output都会动态裁剪
         beam_inst_idx_map = {
             beam_idx: inst_idx for inst_idx, beam_idx in enumerate(range(batch_size))}  #beam-inst的索引字典
