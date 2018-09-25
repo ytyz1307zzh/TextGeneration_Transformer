@@ -64,7 +64,7 @@ class Diverse_Beam(object):
             for beam_id in range(beam_size):
                 for sent_id in range(round(num_words*0.1)):
                     for prev_sent in self.prev_sents: # 和之前的每个句子比较，diversity求和
-                        #diversity[beam_id][sent_id]+=self.Lambda_1*hamming_diversity(prev_sent,cur_sents[beam_id][sent_id])
+                        diversity[beam_id][sent_id]+=self.Lambda_1*hamming_diversity(prev_sent,cur_sents[beam_id][sent_id])
                         diversity[beam_id][sent_id]+=self.Lambda_2*n_gram_diversity(prev_sent,cur_sents[beam_id][sent_id],n=2)
                         diversity[beam_id][sent_id]+=self.Lambda_3*n_gram_diversity(prev_sent,cur_sents[beam_id][sent_id],n=3)
         #print('diversity:',diversity)
