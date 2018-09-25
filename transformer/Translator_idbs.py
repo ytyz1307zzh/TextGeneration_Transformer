@@ -111,7 +111,7 @@ class Translator_idbs(object):
             dec_partial_pos = dec_partial_pos.repeat(n_remaining_sents * beam_size, 1)
             # 建造出[remaining_sents*beam, len_dec_seq]的tensor，只需要考虑剩余未翻译完的句子
             # wrap into a Variable
-            dec_partial_pos = Variable(dec_partial_pos.type(torch.LongTensor), requires_grad=False)
+            dec_partial_pos = Variable(dec_partial_pos.type(self.tt.LongTensor), requires_grad=False)
 
             if self.opt.cuda:
                 dec_partial_seq = dec_partial_seq.cuda()

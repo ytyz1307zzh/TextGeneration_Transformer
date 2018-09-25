@@ -27,6 +27,7 @@ class Diverse_Beam(object):
         self.prev_sents=[] # 已完成的句子, (sent, seq_len)
 
         self.tt = torch.cuda if cuda else torch
+        self.cuda = cuda
 
         # The score for each translation on the beam.
         self.scores = self.tt.FloatTensor(beam_size).zero_() # size=(beam,)
@@ -61,12 +62,15 @@ class Diverse_Beam(object):
             cur_sents=torch.cat([cur_sents,word_ids],dim=-1) if len(self.next_ys)>1 else word_ids# 将每个可能单词放入cur_sent计算各自的diversity
 
             for beam_id in range(beam_size):
-                for sent_id in range(num_words):
+                for sent_id in range(round(num_words*0.1)):
                     for prev_sent in self.prev_sents: # 和之前的每个句子比较，diversity求和
-                        diversity[beam_id][sent_id]+=self.Lambda_1*hamming_diversity(prev_sent,cur_sents[beam_id][sent_id])
+                        #diversity[beam_id][sent_id]+=self.Lambda_1*hamming_diversity(prev_sent,cur_sents[beam_id][sent_id])
                         diversity[beam_id][sent_id]+=self.Lambda_2*n_gram_diversity(prev_sent,cur_sents[beam_id][sent_id],n=2)
                         diversity[beam_id][sent_id]+=self.Lambda_3*n_gram_diversity(prev_sent,cur_sents[beam_id][sent_id],n=3)
         #print('diversity:',diversity)
+
+        if self.cuda:
+            diversity=diversity.cuda()
 
         # Sum the previous scores.
         if len(self.prev_ks) > 0:
@@ -89,8 +93,8 @@ class Diverse_Beam(object):
         except ValueError:
             best_scores=best_scores[:-1]
             best_scores_id=best_scores_id[:-1]
-        best_scores=torch.Tensor(best_scores)
-        best_scores_id=torch.LongTensor(best_scores_id)
+        best_scores=self.tt.FloatTensor(best_scores)
+        best_scores_id=self.tt.LongTensor(best_scores_id)
 
         self.scores = best_scores
 
@@ -132,7 +136,7 @@ class Diverse_Beam(object):
             prev=[]
             for sent in self.prev_sents:
                 prev.extend(sent)  # 将prev_sent转化成一维list
-            hyps = torch.LongTensor(prev).unsqueeze(0).repeat(self.beam_size,1) # (beam, seq_len)
+            hyps = self.tt.LongTensor(prev).unsqueeze(0).repeat(self.beam_size,1) # (beam, seq_len)
             dec_seq = torch.from_numpy(np.array(hyps))
 
         else:
@@ -143,10 +147,12 @@ class Diverse_Beam(object):
                 prev=[]
                 for sent in self.prev_sents:
                     prev.extend(sent) # 将prev_sent转化成一维list
-                hyps = torch.cat([torch.LongTensor(prev).unsqueeze(0).repeat(self.beam_size,1), torch.LongTensor(hyps)],dim=-1)
+                hyps = torch.cat([self.tt.LongTensor(prev).unsqueeze(0).repeat(self.beam_size,1), self.tt.LongTensor(hyps)],dim=-1)
                 # (beam, seq_len)
 
             dec_seq = torch.from_numpy(np.array(hyps))
+        if self.cuda:
+            dec_seq=dec_seq.cuda()
 
         return dec_seq # (beam,seq_len)
 
