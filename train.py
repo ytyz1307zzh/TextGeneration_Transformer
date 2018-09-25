@@ -155,7 +155,7 @@ def train(model, training_data, validation_data, crit, optimizer, opt):
                 model_name = opt.save_model + '_ppl_{ppl:8.5f}.chkpt'.format(ppl=valid_ppl)
                 torch.save(checkpoint, model_name)  #保存settings和model
             elif opt.save_mode == 'best':  #保存最佳模型
-                model_name = opt.save_model + '.chkpt'
+                model_name = opt.save_model + '_ppl_{ppl:8.5f}.chkpt'.format(ppl=valid_ppl)
                 if valid_ppl >= max(valid_ppls):
                     torch.save(checkpoint, model_name)
                     print('    - [Info] The checkpoint file has been updated.')

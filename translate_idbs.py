@@ -66,6 +66,7 @@ def main():
         for idx_seq in all_hyp:
             pred_line = ' '.join([test_data.tgt_idx2word[idx] for idx in idx_seq])  #转化成单词拼接起来
             f.write(pred_line + '\n')
+            f.flush()
     f.close()
     print('[Info] Finished.')
 

@@ -64,6 +64,7 @@ def main():
                 for idx_seq in idx_seqs:
                     pred_line = ' '.join([test_data.tgt_idx2word[idx.tolist()] for idx in idx_seq])  #转化成单词拼接起来
                     f.write(pred_line + '\n')
+                    f.flush()
     print('[Info] Finished.')
 
 if __name__ == "__main__":
