@@ -62,7 +62,7 @@ def main():
             all_hyp, all_scores = translator.translate_batch(batch)
             for idx_seqs in all_hyp:
                 for idx_seq in idx_seqs:
-                    pred_line = ' '.join([test_data.tgt_idx2word[idx] for idx in idx_seq])  #转化成单词拼接起来
+                    pred_line = ' '.join([test_data.tgt_idx2word[idx.tolist()] for idx in idx_seq])  #转化成单词拼接起来
                     f.write(pred_line + '\n')
     print('[Info] Finished.')
 

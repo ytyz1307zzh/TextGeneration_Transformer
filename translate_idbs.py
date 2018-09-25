@@ -60,12 +60,13 @@ def main():
     translator.model.eval()
 
     print('[Info] Start translating...')
-    with open(opt.output, 'w') as f:
-        for batch in tqdm(test_data, mininterval=2, desc='  - (Test)', leave=False):
-            all_hyp= translator.translate_batch(batch)
-            for idx_seq in all_hyp:
-                pred_line = ' '.join([test_data.tgt_idx2word[idx] for idx in idx_seq])  #转化成单词拼接起来
-                f.write(pred_line + '\n')
+    f=open(opt.output, 'w')
+    for batch in tqdm(test_data, mininterval=2, desc='  - (Test)', leave=False):
+        all_hyp= translator.translate_batch(batch)
+        for idx_seq in all_hyp:
+            pred_line = ' '.join([test_data.tgt_idx2word[idx] for idx in idx_seq])  #转化成单词拼接起来
+            f.write(pred_line + '\n')
+    f.close()
     print('[Info] Finished.')
 
 if __name__ == "__main__":

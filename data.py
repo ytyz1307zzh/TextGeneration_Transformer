@@ -52,7 +52,7 @@ for title,text in lines:
         continue
     title=erase_noise(title)
     text=erase_noise(text)
-    if len(text.split())>90: # omit samples with too many words in the text
+    if len(text.split())>200: # omit samples with too many words in the text
         omit_cnt+=1
         continue
     if len(text.split())<20: # omit samples with too few words in the text

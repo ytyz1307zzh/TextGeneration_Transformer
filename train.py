@@ -119,26 +119,30 @@ def train(model, training_data, validation_data, crit, optimizer, opt):
             log_tf.write('epoch,loss,ppl,accuracy\n')
             log_vf.write('epoch,loss,ppl,accuracy\n')
 
-    valid_accus = []
+    valid_ppls = []
     print('[Info] Start training...')
     for epoch_i in range(opt.epoch):
         print('[ Epoch', epoch_i, ']')
 
         start = time.time()
+        #train process
         train_loss, train_accu = train_epoch(model, training_data, crit, optimizer)
+
         print('  - (Training)   ppl: {ppl: 8.5f}, accuracy: {accu:3.3f} %, '\
               'elapse: {elapse:3.3f} min'.format(
                   ppl=math.exp(min(train_loss, 100)), accu=100*train_accu,
                   elapse=(time.time()-start)/60))
 
+        #validation process
         start = time.time()
         valid_loss, valid_accu = eval_epoch(model, validation_data, crit)
+        valid_ppl=math.exp(min(valid_loss, 100))
         print('  - (Validation) ppl: {ppl: 8.5f}, accuracy: {accu:3.3f} %, '\
                 'elapse: {elapse:3.3f} min'.format(
-                    ppl=math.exp(min(valid_loss, 100)), accu=100*valid_accu,
+                    ppl=valid_ppl, accu=100*valid_accu,
                     elapse=(time.time()-start)/60))
 
-        valid_accus += [valid_accu]
+        valid_ppls += [valid_ppl]
 
         model_state_dict = model.state_dict()
         checkpoint = {
@@ -148,11 +152,11 @@ def train(model, training_data, validation_data, crit, optimizer, opt):
 
         if opt.save_model:
             if opt.save_mode == 'all':  #保存所有模型
-                model_name = opt.save_model + '_ppl_{ppl:8.5f}.chkpt'.format(ppl=math.exp(min(train_loss,100)))
+                model_name = opt.save_model + '_ppl_{ppl:8.5f}.chkpt'.format(ppl=valid_ppl)
                 torch.save(checkpoint, model_name)  #保存settings和model
             elif opt.save_mode == 'best':  #保存最佳模型
                 model_name = opt.save_model + '.chkpt'
-                if valid_accu >= max(valid_accus):
+                if valid_ppl >= max(valid_ppls):
                     torch.save(checkpoint, model_name)
                     print('    - [Info] The checkpoint file has been updated.')
 

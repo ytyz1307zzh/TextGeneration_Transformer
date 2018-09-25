@@ -1,16 +1,16 @@
-import torch
+
 import numpy as np
 
-valid_src_path=r'C:\Users\Zhihan Zhang\PycharmProjects\transformer-pytorch\transformer\valid_source.txt'
-valid_tgt_path=r'C:\Users\Zhihan Zhang\PycharmProjects\transformer-pytorch\transformer\valid_target.txt'
-test_src_path=r'C:\Users\Zhihan Zhang\PycharmProjects\transformer-pytorch\transformer\test_source.txt'
-test_tgt_path=r'C:\Users\Zhihan Zhang\PycharmProjects\transformer-pytorch\transformer\test_target.txt'
+valid_src_path=r'C:\Users\Zhihan Zhang\PycharmProjects\transformer-pytorch\transformer\train_source.txt'
+valid_tgt_path=r'C:\Users\Zhihan Zhang\PycharmProjects\transformer-pytorch\transformer\train_target.txt'
+test_src_path=r'C:\Users\Zhihan Zhang\PycharmProjects\transformer-pytorch\transformer\train_source_10.txt'
+test_tgt_path=r'C:\Users\Zhihan Zhang\PycharmProjects\transformer-pytorch\transformer\train_target_10.txt'
 valid_src=open(valid_src_path,'r',encoding='utf-8')
 valid_tgt=open(valid_tgt_path,'r',encoding='utf-8')
 test_src=open(test_src_path,'w',encoding='utf-8')
 test_tgt=open(test_tgt_path,'w',encoding='utf-8')
 
-cnt=14725 # total lines count
+cnt=83436 # total lines count
 
 samples=[]
 for _ in range(10):
