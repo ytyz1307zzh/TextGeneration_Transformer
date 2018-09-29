@@ -69,7 +69,7 @@ def train_epoch(model, training_data, crit, optimizer):
         n_words = gold.data.ne(Constants.PAD).sum()  #总词数
         n_total_words += n_words
         n_total_correct += n_correct
-        total_loss += loss.item()
+        total_loss += loss.item()[0]
 
     return total_loss/n_total_words, n_total_correct/n_total_words
 
@@ -98,7 +98,7 @@ def eval_epoch(model, validation_data, crit):
         n_words = gold.data.ne(Constants.PAD).sum()
         n_total_words += n_words
         n_total_correct += n_correct
-        total_loss += loss.item()
+        total_loss += loss.item()[0]
 
     return total_loss/n_total_words, n_total_correct/n_total_words
 
@@ -156,7 +156,7 @@ def train(model, training_data, validation_data, crit, optimizer, opt):
                 torch.save(checkpoint, model_name)  #保存settings和model
             elif opt.save_mode == 'best':  #保存最佳模型
                 model_name = opt.save_model + '_ppl_{ppl:8.5f}.chkpt'.format(ppl=valid_ppl)
-                if valid_ppl >= max(valid_ppls):
+                if valid_ppl <= min(valid_ppls):
                     torch.save(checkpoint, model_name)
                     print('    - [Info] The checkpoint file has been updated.')
 
