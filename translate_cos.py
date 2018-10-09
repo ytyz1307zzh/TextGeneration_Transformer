@@ -32,7 +32,7 @@ def main():
                         help='diversity factor for bi-gram diversity')
     parser.add_argument('-lambda_3',type=float, default=2/3,
                         help='diversity factor for tri-gram diversity')
-    parser.add_argument('-wmd_weight',type=float, default=20000,
+    parser.add_argument('-wmd_weight',type=float, default=10,
                         help='weight factor for wmd distance')
     parser.add_argument('-no_cuda', action='store_true')
 
