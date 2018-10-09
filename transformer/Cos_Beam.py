@@ -16,7 +16,7 @@ class Cos_Beam(object):
     ''' Store the neccesary info for beam search. '''
     # 维护每一步选的beam个句子中的最后一个词及其对应的上一步beam个句子中的哪个句子
 
-    def __init__(self,beam_size,lambda_1=2/3,lambda_2=2/3,lambda_3=2/3,wmd_weight=20000,cuda=False):
+    def __init__(self,beam_size,lambda_1=2/3,lambda_2=2/3,lambda_3=2/3,wmd_weight=10,cuda=False):
 
         self.beam_size = beam_size
         self.done = False # 检查是否结束
