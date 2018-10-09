@@ -69,8 +69,8 @@ class Cos_Beam(object):
             for sent_id in range(round(num_words*0.1)):
                 wmd_distance[beam_id][sent_id]+=self.wmd_weight*Wmd_Distance(src_seq[beam_id],cur_sents[beam_id][sent_id],embed_mat)
 
-        print('top 100 probable score: ',word_lk[0].topk(100,0,True,True)[0])
-        print('top 100 coherent score: ',wmd_distance[0].topk(100,0,True,True)[0])
+        print('top 100 probable score: ',word_lk[0].topk(100,0,largest=True,sorted=True)[0])
+        print('top 100 coherent score: ',wmd_distance[0].topk(100,0,largest=False,sorted=True)[0])
 
         '''
         if self.sent_cnt>0: # 对第二个及之后的句子，加入hamming diversity
