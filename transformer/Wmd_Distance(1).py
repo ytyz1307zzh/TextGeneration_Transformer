@@ -23,7 +23,7 @@ def Wmd_Distance(src_seq, cur_sent,embed_mat):
         result=np.sqrt(result)
         return result
 
-    distance = - np.sum(src_bow*cur_bow)/(length(src_bow)*length(cur_bow))
+    distance = 1 - np.sum(src_bow*cur_bow)/(length(src_bow)*length(cur_bow))
 
     return distance
 '''
