@@ -38,7 +38,7 @@ def compute_distance(word1,word2,embed_mat):
         result=np.sqrt(result)
         return result
 
-    distance=sum(word_embed1*word_embed2)/(length(word_embed1)*length(word_embed2))
+    distance = 1 - sum(word_embed1*word_embed2)/(length(word_embed1)*length(word_embed2))
     return distance
 
 def compute_normalized_word_freq(sent, word_set):
