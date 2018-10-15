@@ -26,7 +26,7 @@ def Wmd_Distance(src_seq, cur_sent,embed_mat):
 
     # 计算词移距离
     wmd_distance = emd(d1, d2, distance_matrix)
-    return wmd_distance
+    return wmd_distance - 1
 
 def compute_distance(word1,word2,embed_mat):
 
