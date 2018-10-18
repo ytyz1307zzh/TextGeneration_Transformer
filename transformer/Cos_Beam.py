@@ -96,11 +96,6 @@ class Cos_Beam(object):
         best_scores, best_scores_id = flat_beam_lk.topk(self.beam_size+1,0,True,True) # 1st sort
         best_scores, best_scores_id = flat_beam_lk.topk(self.beam_size+1,0,True,True) # 2nd sort
 
-        vocab_path=r'./glove_vocab.txt'
-        vocab_file=open(vocab_path,'r',encoding='utf-8')
-        full_vocab = vocab_file.readline().strip().split()
-        print('top 100 probable words: ', [full_vocab[i] for i in best_scores_id])
-
         best_scores=best_scores.tolist()
         best_scores_id=best_scores_id.tolist()
         try:
