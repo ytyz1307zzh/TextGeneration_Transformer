@@ -9,8 +9,8 @@ stopwords_list=[45, 289, 196, 3265, 57, 166, 12170, 5044, 85, 396, 16406, 4965, 
                 163655, 73334, 66023, 178189, 6018, 75364, 4209, 14106, 185139, 128077, 239580, 231, 188794,0,1,2,3,6]
 def Wmd_Distance(src_seq, cur_sent,embed_mat):
 
-    src_seq=[index for index in src_seq if index not in stopwords_list]
-    cur_sent=[index for index in cur_sent if index not in stopwords_list]
+    #src_seq=[index for index in src_seq if index not in stopwords_list]
+    #cur_sent=[index for index in cur_sent if index not in stopwords_list]
 
     word_set=list(set(src_seq + cur_sent))
     vocab_len = len(word_set)
@@ -25,7 +25,7 @@ def Wmd_Distance(src_seq, cur_sent,embed_mat):
     d2 = compute_normalized_word_freq(cur_sent,word_set)
 
     # 计算词移距离
-    wmd_distance = emd(d1, d2, distance_matrix)
+    wmd_distance = emd(d1, d2, distance_matrix) # (0,1)内的值，越小越好
     return wmd_distance - 1
 
 def compute_distance(word1,word2,embed_mat):

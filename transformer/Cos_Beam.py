@@ -69,18 +69,6 @@ class Cos_Beam(object):
             for sent_id in range(round(num_words*0.1)):
                 wmd_distance[beam_id][sent_id]+=self.wmd_weight*Wmd_Distance(src_seq[beam_id],cur_sents[beam_id][sent_id],embed_mat)
 
-        prob_topk=word_lk[0].topk(100,0,largest=True,sorted=True)
-        cos_topk=wmd_distance[0].topk(100,0,largest=False,sorted=True)
-
-        print('top 100 probable score: ',prob_topk[0])
-        print('top 100 coherent score: ',cos_topk[0])
-
-        vocab_path=r'./glove_vocab.txt'
-        vocab_file=open(vocab_path,'r',encoding='utf-8')
-        full_vocab = vocab_file.readline().strip().split()
-        print('top 100 probable words: ', [full_vocab[i] for i in prob_topk[1]])
-        print('top 100 coherent words: ', [full_vocab[i] for i in cos_topk[1]])
-
         '''
         if self.sent_cnt>0: # 对第二个及之后的句子，加入hamming diversity
             #compute diversity
@@ -107,6 +95,11 @@ class Cos_Beam(object):
         # 排序选出前beam_size个分数, best_scores_id.size=(beam,)
         best_scores, best_scores_id = flat_beam_lk.topk(self.beam_size+1,0,True,True) # 1st sort
         best_scores, best_scores_id = flat_beam_lk.topk(self.beam_size+1,0,True,True) # 2nd sort
+
+        vocab_path=r'./glove_vocab.txt'
+        vocab_file=open(vocab_path,'r',encoding='utf-8')
+        full_vocab = vocab_file.readline().strip().split()
+        print('top 100 probable words: ', [full_vocab[i] for i in best_scores_id])
 
         best_scores=best_scores.tolist()
         best_scores_id=best_scores_id.tolist()

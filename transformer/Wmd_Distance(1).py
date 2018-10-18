@@ -9,8 +9,8 @@ stopwords_list=[45, 289, 196, 3265, 57, 166, 12170, 5044, 85, 396, 16406, 4965, 
                 163655, 73334, 66023, 178189, 6018, 75364, 4209, 14106, 185139, 128077, 239580, 231, 188794,0,1,2,3,6]
 def Wmd_Distance(src_seq, cur_sent,embed_mat):
 
-    src_seq=[index for index in src_seq if index not in stopwords_list]
-    cur_sent=[index for index in cur_sent if index not in stopwords_list]
+    #src_seq=[index for index in src_seq if index not in stopwords_list]
+    #cur_sent=[index for index in cur_sent if index not in stopwords_list]
 
     src_emb=np.array([embed_mat[word] for word in src_seq])
     cur_emb=np.array([embed_mat[word] for word in cur_sent])
@@ -23,13 +23,16 @@ def Wmd_Distance(src_seq, cur_sent,embed_mat):
         result=np.sqrt(result)
         return result
 
-    distance = -1 - np.sum(src_bow*cur_bow)/(length(src_bow)*length(cur_bow))
+    distance = -1 - np.sum(src_bow*cur_bow)/(length(src_bow)*length(cur_bow))# 后面这一项是[-1,1]内的值，越大越好
 
     return distance
 '''
 embed_mat=np.array([[0,1,2,3,4],[1,2,3,4,5],[2,3,4,5,6],[3,4,5,6,7],[4,5,6,7,8]])
 src_seq=[2,3,2]
 cur_sent=[1,2,4,0,3,2,1,2,3]
-print(Wmd_Distance(src_seq,cur_sent,embed_mat))
+distance=Wmd_Distance(src_seq,cur_sent,embed_mat)
+print(distance)
+print(distance.dtype)
 '''
+
 
